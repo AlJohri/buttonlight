@@ -29,6 +29,7 @@ class StatusList(restful.Resource):
     def __init__(self, *args, **kwargs):
         self.parser = reqparse.RequestParser()
         self.parser.add_argument('status', type=str)
+        self.parser.add_argument('device_id', type=str)
         super(StatusList, self).__init__()
 
     def get(self):
@@ -36,9 +37,10 @@ class StatusList(restful.Resource):
 
     def post(self):
         args = self.parser.parse_args()
-        if not args['status']: abort(400)
+        if not args['status'] or not args['device_id']: abort(400)
         status = int(args['status'])
-        status_id =  mongo.db.status.insert({"_id": current_milli_time(), "status": status})
+        device_id = args['device_id']
+        status_id =  mongo.db.status.insert({"time": current_milli_time(), "status": status, "device_id": device_id})
         return mongo.db.status.find_one({"_id": status_id})
 
 class Status(restful.Resource):
