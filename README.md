@@ -3,10 +3,10 @@
 ## Get List
 
 ```
-curl http://localhost:5000/status/
+curl http://buttonlight.herokuapp.com/status/
 ```
 
 ## Set Status
 ```
-curl -X POST http://localhost:5000/status/ -d 'status=1'
+curl -X POST http://buttonlight.herokuapp.com/status/ -d 'status=1'
 ```
