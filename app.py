@@ -30,10 +30,21 @@ class StatusList(restful.Resource):
         self.parser = reqparse.RequestParser()
         self.parser.add_argument('status', type=str)
         self.parser.add_argument('device_id', type=str)
+        self.parser.add_argument('last', type=int)
         super(StatusList, self).__init__()
 
     def get(self):
-        return [x for x in mongo.db.status.find()] # .sort("_id", 1)
+        args = self.parser.parse_args()
+        if args['device_id']:
+            if args['last'] == 1:
+                return [x for x in mongo.db.status.find({"device_id": args['device_id']}).sort("time", -1).limit(1) ]
+            else:
+                return [x for x in mongo.db.status.find({"device_id": args['device_id']})]
+        else:
+            if args['last'] == 1:
+                raise NotImplementedError("find last time for each device_id ..")
+            else:
+                return [x for x in mongo.db.status.find()]
 
     def post(self):
         args = self.parser.parse_args()

@@ -4,6 +4,8 @@
 
 ```
 curl http://buttonlight.herokuapp.com/status/
+curl http://buttonlight.herokuapp.com/status/?device_id=53ff6b066678505521351367
+curl http://buttonlight.herokuapp.com/status/?device_id=53ff6b066678505521351367&last=1
 ```
 
 ## Set Status
