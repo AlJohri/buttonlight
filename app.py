@@ -76,6 +76,7 @@ def event_stream():
     for message in pubsub.listen():
         print message
         yield 'data: %s\n\n' % message['data']
+    pubsub.close()
 
 @app.route('/stream')
 def stream():
