@@ -1,11 +1,13 @@
-import os, json, time
-from flask import Flask, request, abort
+import os, json, time, redis
+from flask import Flask, request, abort, render_template, Response
 from flask.ext import restful
 from flask.ext.restful import reqparse
 from flask.ext.pymongo import PyMongo
 from flask import make_response
 from bson.json_util import dumps
 from bson.objectid import ObjectId
+
+red = redis.StrictRedis()
 
 current_milli_time = lambda: int(round(time.time() * 1000))
 
@@ -14,6 +16,7 @@ MONGO_URL = os.environ.get('MONGO_URL', 'mongodb://localhost:27017/buttonlight')
 app = Flask(__name__)
 
 app.config['MONGO_URI'] = MONGO_URL
+app.config['DEBUG'] = True
 mongo = PyMongo(app)
 
 def output_json(obj, code, headers=None):
@@ -52,7 +55,9 @@ class StatusList(restful.Resource):
         status = int(args['status'])
         device_id = args['device_id']
         status_id =  mongo.db.status.insert({"time": current_milli_time(), "status": status, "device_id": device_id})
-        return mongo.db.status.find_one({"_id": status_id})
+        obj = mongo.db.status.find_one({"_id": status_id})
+        red.publish('status', dumps(obj))
+        return obj
 
 class Status(restful.Resource):
     def get(self, status_id):
@@ -63,14 +68,21 @@ class Status(restful.Resource):
         mongo.db.status.remove({"_id": status_id})
         return '', 204
 
-class Root(restful.Resource):
-    def get(self):
-        return {
-            'status': 'OK',
-            'mongo': str(mongo.db),
-        }
+def event_stream():
+    pubsub = red.pubsub()
+    pubsub.subscribe('status')
+    for message in pubsub.listen():
+        print message
+        yield 'data: %s\n\n' % message['data']
 
-api.add_resource(Root, '/')
+@app.route('/stream')
+def stream():
+    return Response(event_stream(), mimetype="text/event-stream")
+
+@app.route('/')
+def index():
+    return render_template('index.html')
+
 api.add_resource(StatusList, '/status/')
 api.add_resource(Status, '/status/<ObjectId:status_id>')
 

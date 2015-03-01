@@ -1,1 +1,1 @@
-web: python app.py
+web: gunicorn --worker-class=gevent -t 99999 app:app
