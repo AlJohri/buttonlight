@@ -10,7 +10,7 @@
         var source = new EventSource('/stream');
         var out = document.getElementById('out');
         source.onmessage = function(e) {
-            // XSS in chat is fun
+            if (e.data == 1) return;
             out.innerHTML =  e.data + '\n' + out.innerHTML;
         };
     }
