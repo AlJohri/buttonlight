@@ -1,9 +1,11 @@
 <!doctype html>
 <title>chat</title>
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
-<style>body { margin: auto; padding: 1em; background: black; color: #fff; font: 16px/1.6 menlo, monospace; }</style>
+<style>
+    body { margin: auto; padding: 1em; background: black; color: #fff; font: 16px/1.6 menlo, monospace; }
+</style>
 <h2><b>ButtonLight</b></h2>
-<!-- <p>Message: <input id="in" /></p> -->
+<canvas id="canvas" width="90" height="50"></canvas>
 <pre id="out"></pre>
 <script>
     function sse() {
@@ -12,15 +14,22 @@
         source.onmessage = function(e) {
             if (e.data == 1) return;
             var data = JSON.parse(e.data);
-            var d = new Date(data['time']);
-            out.innerHTML =  d + ' | Device: ' + data['device_id'] + ' | Status: ' + data['status'] + '\n' + out.innerHTML;
+            var date = new Date(data['time']);
+            out.innerHTML =  date + ' | Device: ' + data['device_id'] + ' | Status: ' + data['status'] + '\n' + out.innerHTML;
+            if (data['status'] == "1") { drawCircle(ctx, "blue"); }
+            else { drawCircle(ctx, "red"); }
         };
     }
-    // $('#in').keyup(function(e){
-    //     if (e.keyCode == 13) {
-    //         $.post('/post', {'message': $(this).val()});
-    //         $(this).val('');
-    //     }
-    // });
     sse();
+</script>
+
+<script>
+var ctx = $('#canvas')[0].getContext("2d");
+function drawCircle(context,color){
+    context.fillStyle = color;
+    context.beginPath();
+    context.arc(55, 30, 20, 0, 2 * Math.PI);
+    context.closePath();
+    context.fill()
+}
 </script>
