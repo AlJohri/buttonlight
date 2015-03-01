@@ -94,8 +94,8 @@ def index():
 @app.route('/text', methods=['POST'])
 def text():
     client = TwilioRestClient(TWILLIO_ACCOUNT_SID, TWILLIO_AUTH_TOKEN)
-    message1 = client.messages.create(body="Light was reset.", to="+19739851417", from_="+19737551570")
-    message2 = client.messages.create(body="Light was reset.", to="+18473024039", from_="+19737551570")
+    message1 = client.messages.create(body="Feed your dog!.", to="+19739851417", from_="+19737551570")
+    message2 = client.messages.create(body="Feed your dog!", to="+18473024039", from_="+19737551570")
     return str(message1.sid + " " + message2.sid)
 
 api.add_resource(StatusList, '/status/')
