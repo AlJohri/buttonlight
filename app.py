@@ -12,7 +12,7 @@ current_milli_time = lambda: int(round(time.time() * 1000))
 
 MONGO_URL = os.getenv('MONGO_URL', 'mongodb://localhost:27017/buttonlight')
 REDIS_URL = os.getenv('REDISTOGO_URL', 'redis://localhost:6379')
-red = redis.StrictRedis(socket_timeout=5).from_url(REDIS_URL)
+# red = redis.StrictRedis(socket_timeout=5).from_url(REDIS_URL)
 
 app = Flask(__name__)
 
@@ -57,7 +57,7 @@ class StatusList(restful.Resource):
         device_id = args['device_id']
         status_id =  mongo.db.status.insert({"time": current_milli_time(), "status": status, "device_id": device_id})
         obj = mongo.db.status.find_one({"_id": status_id})
-        red.publish('status', dumps(obj))
+        # red.publish('status', dumps(obj))
         return obj
 
 class Status(restful.Resource):
@@ -69,18 +69,18 @@ class Status(restful.Resource):
         mongo.db.status.remove({"_id": status_id})
         return '', 204
 
-def event_stream():
-    # yield 'retry: 10000\n'
-    pubsub = red.pubsub()
-    pubsub.subscribe('status')
-    for message in pubsub.listen():
-        print message
-        yield 'data: %s\n\n' % message['data']
-    pubsub.close()
+# def event_stream():
+#     # yield 'retry: 10000\n'
+#     pubsub = red.pubsub()
+#     pubsub.subscribe('status')
+#     for message in pubsub.listen():
+#         print message
+#         yield 'data: %s\n\n' % message['data']
+#     pubsub.close()
 
-@app.route('/stream')
-def stream():
-    return Response(event_stream(), mimetype="text/event-stream")
+# @app.route('/stream')
+# def stream():
+#     return Response(event_stream(), mimetype="text/event-stream")
 
 @app.route('/')
 def index():

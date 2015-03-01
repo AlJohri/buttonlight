@@ -1,1 +1,1 @@
-web: gunicorn --log-level info --worker-class=gevent -t 99999 app:app
+web: gunicorn --log-level info -t 99999 app:app
