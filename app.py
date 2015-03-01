@@ -12,7 +12,7 @@ current_milli_time = lambda: int(round(time.time() * 1000))
 
 MONGO_URL = os.getenv('MONGO_URL', 'mongodb://localhost:27017/buttonlight')
 REDIS_URL = os.getenv('REDISTOGO_URL', 'redis://localhost:6379')
-red = redis.from_url(REDIS_URL)
+red = redis.StrictRedis(socket_timeout=5).from_url(REDIS_URL)
 
 app = Flask(__name__)
 
