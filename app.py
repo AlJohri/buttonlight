@@ -7,12 +7,17 @@ from flask import make_response
 from bson.json_util import dumps
 from bson.objectid import ObjectId
 
+from twilio.rest import TwilioRestClient
+
 
 current_milli_time = lambda: int(round(time.time() * 1000))
 
 MONGO_URL = os.getenv('MONGO_URL', 'mongodb://localhost:27017/buttonlight')
 REDIS_URL = os.getenv('REDISTOGO_URL', 'redis://localhost:6379')
 # red = redis.StrictRedis(socket_timeout=5).from_url(REDIS_URL)
+
+TWILLIO_ACCOUNT_SID = os.getenv('TWILLIO_ACCOUNT_SID')
+TWILLIO_AUTH_TOKEN = os.getenv('TWILLIO_AUTH_TOKEN')
 
 app = Flask(__name__)
 
@@ -85,6 +90,13 @@ class Status(restful.Resource):
 @app.route('/')
 def index():
     return render_template('index.html')
+
+@app.route('/text', methods=['POST'])
+def text():
+    client = TwilioRestClient(TWILLIO_ACCOUNT_SID, TWILLIO_AUTH_TOKEN)
+    message1 = client.messages.create(body="Light was reset.", to="+19739851417", from_="+19737551570")
+    message2 = client.messages.create(body="Light was reset.", to="+18473024039", from_="+19737551570")
+    return str(message1.sid + " " + message2.sid)
 
 api.add_resource(StatusList, '/status/')
 api.add_resource(Status, '/status/<ObjectId:status_id>')
