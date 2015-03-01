@@ -2,7 +2,7 @@
 <title>chat</title>
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
 <style>body { margin: auto; padding: 1em; background: black; color: #fff; font: 16px/1.6 menlo, monospace; }</style>
-<p><b>ButtonLight</b></p>
+<h2><b>ButtonLight</b></h2>
 <!-- <p>Message: <input id="in" /></p> -->
 <pre id="out"></pre>
 <script>
@@ -11,7 +11,9 @@
         var out = document.getElementById('out');
         source.onmessage = function(e) {
             if (e.data == 1) return;
-            out.innerHTML =  e.data + '\n' + out.innerHTML;
+            var data = JSON.parse(e.data);
+            var d = new Date(data['time']);
+            out.innerHTML =  d + ' | Device: ' + data['device_id'] + ' | Status: ' + data['status'] + '\n' + out.innerHTML;
         };
     }
     // $('#in').keyup(function(e){

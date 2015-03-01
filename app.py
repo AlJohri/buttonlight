@@ -70,6 +70,7 @@ class Status(restful.Resource):
         return '', 204
 
 def event_stream():
+    # yield 'retry: 10000\n'
     pubsub = red.pubsub()
     pubsub.subscribe('status')
     for message in pubsub.listen():
